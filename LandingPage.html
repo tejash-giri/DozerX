@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DozerX — Heavy Equipment Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --yellow:#F5A623;
+    --yellow-dark:#D4891A;
+    --black:#0F0F0F;
+    --surface:#1A1A1A;
+    --card:#242424;
+    --border:#333;
+    --text:#E8E8E8;
+    --muted:#888;
+    --green:#22C55E;
+    --red:#FF4444;
+  }
+  html{scroll-behavior:smooth}
+  body{background:var(--black);color:var(--text);font-family:'Inter',sans-serif;overflow-x:hidden}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:0 5%;height:64px;background:rgba(15,15,15,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+  .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--yellow);letter-spacing:2px}
+  .nav-links{display:flex;gap:32px;list-style:none}
+  .nav-links a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
+  .nav-links a:hover{color:var(--text)}
+  .nav-cta{background:var(--yellow);color:var(--black);padding:8px 20px;border-radius:6px;font-size:14px;font-weight:700;text-decoration:none;transition:background .2s}
+  .nav-cta:hover{background:var(--yellow-dark)}
+
+  /* HERO */
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:80px 5% 60px;position:relative;overflow:hidden}
+  .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 60%,rgba(245,166,35,0.07) 0%,transparent 70%)}
+  .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,166,35,0.1);border:1px solid rgba(245,166,35,0.3);border-radius:20px;padding:6px 16px;font-size:13px;color:var(--yellow);margin-bottom:32px;font-weight:500}
+  .hero-badge span{width:8px;height:8px;background:var(--green);border-radius:50%;display:inline-block;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,120px);line-height:0.92;letter-spacing:1px;color:#fff;margin-bottom:24px;position:relative;z-index:1}
+  h1 .accent{color:var(--yellow)}
+  .hero-sub{font-size:clamp(16px,2vw,20px);color:var(--muted);max-width:560px;line-height:1.6;margin-bottom:48px}
+  .hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:72px}
+  .btn-primary{background:var(--yellow);color:var(--black);padding:14px 32px;border-radius:8px;font-size:16px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;border:none;cursor:pointer}
+  .btn-primary:hover{background:var(--yellow-dark);transform:translateY(-1px)}
+  .btn-secondary{background:transparent;color:var(--text);padding:14px 32px;border-radius:8px;font-size:16px;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:8px;border:1px solid var(--border);transition:all .2s;cursor:pointer}
+  .btn-secondary:hover{border-color:var(--muted);background:rgba(255,255,255,0.04)}
+
+  /* EXCAVATOR SVG ANIMATION */
+  .excavator-scene{width:100%;max-width:700px;margin:0 auto;position:relative}
+  .dig-label{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+
+  /* STATS */
+  .stats-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:12px;overflow:hidden;max-width:700px;margin:0 auto}
+  .stat-cell{background:var(--surface);padding:24px 20px;text-align:center}
+  .stat-num{font-family:'Bebas Neue',sans-serif;font-size:42px;color:var(--yellow);letter-spacing:1px;display:block}
+  .stat-lbl{font-size:13px;color:var(--muted);margin-top:2px}
+
+  /* SECTION COMMON */
+  section{padding:100px 5%}
+  .section-label{font-size:12px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--yellow);margin-bottom:12px}
+  .section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,6vw,64px);line-height:1;color:#fff;margin-bottom:20px}
+  .section-sub{font-size:16px;color:var(--muted);max-width:560px;line-height:1.7}
+
+  /* HOW IT WORKS */
+  .how-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;margin-top:60px;background:var(--border);border-radius:16px;overflow:hidden}
+  .how-step{background:var(--surface);padding:36px 28px;position:relative}
+  .step-num{font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(245,166,35,0.12);position:absolute;top:16px;right:20px;line-height:1}
+  .step-icon{width:44px;height:44px;background:rgba(245,166,35,0.12);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px}
+  .step-title{font-weight:700;font-size:17px;margin-bottom:10px;color:#fff}
+  .step-desc{font-size:14px;color:var(--muted);line-height:1.6}
+
+  /* WHO IS IT FOR */
+  .user-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:60px}
+  .user-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;transition:border-color .2s}
+  .user-card:hover{border-color:var(--yellow)}
+  .user-card.featured{border-color:rgba(245,166,35,0.4);background:rgba(245,166,35,0.04)}
+  .user-avatar{width:52px;height:52px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:20px}
+  .ua-contractor{background:rgba(34,197,94,0.12)}
+  .ua-fleet{background:rgba(245,166,35,0.12)}
+  .ua-operator{background:rgba(59,130,246,0.12)}
+  .user-role{font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .user-title{font-size:20px;font-weight:700;color:#fff;margin-bottom:12px}
+  .user-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+  .user-perks{list-style:none;display:flex;flex-direction:column;gap:8px}
+  .user-perks li{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .user-perks li::before{content:'✓';color:var(--green);font-weight:700;font-size:12px}
+
+  /* FEATURES */
+  .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;margin-top:60px}
+  .feat-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px}
+  .feat-icon{font-size:28px;margin-bottom:16px}
+  .feat-title{font-weight:700;font-size:16px;color:#fff;margin-bottom:8px}
+  .feat-desc{font-size:14px;color:var(--muted);line-height:1.6}
+  .feat-badge{display:inline-block;font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;margin-top:12px;letter-spacing:0.5px}
+  .badge-new{background:rgba(34,197,94,0.12);color:var(--green)}
+  .badge-core{background:rgba(245,166,35,0.12);color:var(--yellow)}
+
+  /* BIDDING DEMO */
+  .demo-section{background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+  .demo-wrap{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1100px;margin:0 auto}
+  .demo-phone{background:var(--black);border:2px solid var(--border);border-radius:24px;padding:20px;max-width:300px}
+  .phone-header{display:flex;align-items:center;gap:12px;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+  .phone-avatar{width:36px;height:36px;background:rgba(245,166,35,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .phone-job-title{font-size:14px;font-weight:600;color:#fff}
+  .phone-job-sub{font-size:12px;color:var(--muted)}
+  .bid-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:10px;margin-bottom:8px;background:rgba(255,255,255,0.03);border:1px solid var(--border)}
+  .bid-row.winning{border-color:rgba(245,166,35,0.4);background:rgba(245,166,35,0.06)}
+  .bid-name{font-size:13px;font-weight:600;color:#fff}
+  .bid-rating{font-size:11px;color:var(--muted)}
+  .bid-amount{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--yellow)}
+  .bid-crown{font-size:14px;margin-left:4px}
+  .escrow-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);border-radius:20px;padding:8px 16px;font-size:13px;color:var(--green);font-weight:600;margin-top:16px}
+
+  /* MACHINE GRID */
+  .machines-wrap{max-width:1100px;margin:0 auto;margin-top:48px}
+  .machine-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:1px;background:var(--border);
+    border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  }
+
+  .machine-card {
+    background:var(--surface);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 100%;
+    aspect-ratio:4/3;
+    transition:background .25s;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .machine-card:hover{background:var(--card)}
+
+  .machine-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%; 
+    z-index: 1;
+    opacity: 1; /* Removed dark overlay opacity constraint */
+    filter: none; /* Removed gray muddle filters */
+    transition: transform .4s ease;
+  }
+  .machine-card:hover .machine-img {
+    transform: scale(1.04);
+  }
+
+  /* Hard target the Tower Crane card to keep the structure in frame */
+  .machine-card:nth-child(3) .machine-img {
+    object-position: 55% 10%; 
+  }
+
+  /* Subtle transparent bottom fading overlay strictly to read text cleanly */
+  .mc-overlay{
+    position:absolute;inset:0;
+    background:linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.2) 40%, transparent 100%);
+    z-index: 2;
+  }
+  
+  .mc-info{
+    position:absolute;bottom:0;left:0;right:0;
+    padding:20px;
+    z-index: 3;
+  }
+  .mc-name{
+    font-size:20px;font-family:'Bebas Neue',sans-serif;letter-spacing:1px;color:#fff;margin-bottom:2px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.6);
+  }
+  .mc-use{
+    font-size:12px;color:#ddd;letter-spacing:.5px;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+  
+  .mc-arrow{
+    position:absolute;top:16px;right:16px;
+    width:28px;height:28px;border-radius:50%;
+    background:rgba(245,166,35,0.85);
+    border:1px solid rgba(245,166,35,1);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;color:var(--black);
+    font-weight:bold;
+    opacity:0;transition:opacity .25s, transform .25s;
+    z-index: 3;
+  }
+  .machine-card:hover .mc-arrow{opacity:1;transform:scale(1.05)}
+
+  /* PRICING */
+  .pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:60px}
+  .price-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px;position:relative}
+  .price-card.featured-price{border-color:var(--yellow);background:rgba(245,166,35,0.04)}
+  .featured-tag{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--yellow);color:var(--black);font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;letter-spacing:1px;white-space:nowrap}
+  .price-tier{font-size:13px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+  .price-amount{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#fff;line-height:1}
+  .price-period{font-size:14px;color:var(--muted);margin-top:4px;margin-bottom:24px}
+  .price-perks{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:28px}
+  .price-perks li{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:10px}
+  .price-perks li.yes{color:var(--text)}
+  .price-perks li.yes::before{content:'✓';color:var(--green);font-weight:700}
+  .price-perks li.no::before{content:'×';color:var(--border);font-weight:700}
+  .price-btn{display:block;text-align:center;padding:12px;border-radius:8px;font-weight:700;font-size:14px;text-decoration:none;transition:all .2s}
+  .price-btn-outline{border:1px solid var(--border);color:var(--text)}
+  .price-btn-outline:hover{border-color:var(--muted)}
+  .price-btn-fill{background:var(--yellow);color:var(--black)}
+  .price-btn-fill:hover{background:var(--yellow-dark)}
+
+  /* CTA */
+  .cta-section{text-align:center;padding:120px 5%}
+  .cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,7vw,90px);line-height:0.95;color:#fff;margin-bottom:24px}
+  .cta-title .accent{color:var(--yellow)}
+  .cta-sub{font-size:18px;color:var(--muted);max-width:500px;margin:0 auto 48px}
+  .input-row{display:flex;gap:12px;max-width:440px;margin:0 auto}
+  .input-row input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 18px;color:#fff;font-size:15px;outline:none;transition:border-color .2s;font-family:'Inter',sans-serif}
+  .input-row input::placeholder{color:var(--muted)}
+  .input-row input:focus{border-color:var(--yellow)}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--border);padding:48px 5%;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px}
+  .footer-logo{font-family:'Bebas Neue',sans-serif;font-size:24px;color:var(--yellow);letter-spacing:2px}
+  .footer-links{display:flex;gap:24px;list-style:none}
+  .footer-links a{font-size:13px;color:var(--muted);text-decoration:none}
+  .footer-links a:hover{color:var(--text)}
+  .footer-copy{font-size:12px;color:var(--muted)}
+
+  @media(max-width:768px){
+    .demo-wrap{grid-template-columns:1fr}
+    .nav-links{display:none}
+    .input-row{flex-direction:column}
+    .stats-bar{grid-template-columns:1fr}
+    footer{flex-direction:column;text-align:center}
+    .footer-links{justify-content:center}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">DOZERX</span>
+  <ul class="nav-links">
+    <li><a href="#how">How it works</a></li>
+    <li><a href="#machines">Equipment</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+  </ul>
+  <a href="#waitlist" class="nav-cta">Get early access</a>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge"><span></span> Now live in Kathmandu Valley</div>
+  <h1>BOOK HEAVY<br><span class="accent">EQUIPMENT</span><br>INSTANTLY</h1>
+  <p class="hero-sub">Nepal's first marketplace for dozers, excavators & construction machinery. Post a job. Get bids in minutes. Pay only when work is verified.</p>
+  <div class="hero-btns">
+    <a href="#waitlist" class="btn-primary">Post a job →</a>
+    <a href="#how" class="btn-secondary">See how it works</a>
+  </div>
+
+  <div class="excavator-scene">
+    <svg viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" width="100%">
+      <defs>
+        <style>
+          #arm-group{transform-origin:320px 100px;animation:digArm 3s ease-in-out infinite alternate}
+          #bucket{transform-origin:490px 140px;animation:digBucket 3s ease-in-out infinite alternate}
+          @keyframes digArm{0%{transform:rotate(0deg)}100%{transform:rotate(12deg)}}
+          @keyframes digBucket{0%{transform:rotate(0deg)}100%{transform:rotate(-20deg)}}
+          .dirt-particle{animation:fallDirt 3s ease-in infinite}
+          @keyframes fallDirt{0%,100%{opacity:0;transform:translateY(-4px)}30%{opacity:1}60%{opacity:0;transform:translateY(14px)}}
+        </style>
+      </defs>
+      <rect x="0" y="180" width="700" height="40" fill="#1A1A1A" rx="0"/>
+      <rect x="0" y="178" width="700" height="4" fill="#333"/>
+      <circle class="dirt-particle" cx="510" cy="165" r="3" fill="#8B6914" style="animation-delay:0.3s"/>
+      <circle class="dirt-particle" cx="530" cy="160" r="2" fill="#6B4F10" style="animation-delay:0.7s"/>
+      <circle class="dirt-particle" cx="520" cy="170" r="2.5" fill="#5C4008" style="animation-delay:0s"/>
+      <rect x="200" y="150" width="140" height="30" fill="#262626" rx="6"/>
+      <circle cx="215" cy="165" r="10" fill="#111"/>
+      <circle cx="242" cy="165" r="10" fill="#111"/>
+      <circle cx="270" cy="165" r="10" fill="#111"/>
+      <circle cx="297" cy="165" r="10" fill="#111"/>
+      <circle cx="325" cy="165" r="10" fill="#111"/>
+      <rect x="196" y="162" width="148" height="6" fill="#F5A623" rx="2"/>
+      <path d="M 220 150 L 230 110 L 310 110 L 330 150 Z" fill="#F5A623"/>
+      <rect x="240" y="116" width="30" height="20" fill="#111" rx="2"/>
+      <rect x="275" y="116" width="25" height="20" fill="#111" rx="2"/>
+      <rect x="195" y="132" width="30" height="12" fill="#D4891A" rx="2"/>
+      <rect x="210" y="102" width="8" height="10" fill="#444"/>
+      <g id="arm-group">
+        <line x1="320" y1="130" x2="420" y2="70" stroke="#F5A623" stroke-width="14" stroke-linecap="round"/>
+        <line x1="320" y1="130" x2="420" y2="70" stroke="#D4891A" stroke-width="4" stroke-linecap="round"/>
+        <line x1="420" y1="70" x2="490" y2="140" stroke="#F5A623" stroke-width="10" stroke-linecap="round"/>
+        <line x1="290" y1="115" x2="360" y2="85" stroke="#888" stroke-width="4" stroke-linecap="round"/>
+        <line x1="380" y1="75" x2="450" y2="90" stroke="#888" stroke-width="3" stroke-linecap="round"/>
+        <path id="bucket" d="M 485 135 Q 520 140 515 165 Q 495 185 475 160 Z" fill="#333" stroke="#F5A623" stroke-width="2"/>
+      </g>
+    </svg>
+    <div class="dig-label">Real-time matching engine active</div>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stat-cell">
+      <span class="stat-num">247</span>
+      <span class="stat-lbl">Verified Contractors</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-num">89</span>
+      <span class="stat-lbl">Fleet Owners</span>
+    </div>
+    <div class="stat-cell">
+      <span class="stat-num">512</span>
+      <span class="stat-lbl">Machines Active</span>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <span class="section-label">Process</span>
+  <h2 class="section-title">How DozerX works</h2>
+  <p class="section-sub">From posting your project timeline to verifying hours worked on site — we handle the workflow securely.</p>
+
+  <div class="how-grid">
+    <div class="how-step">
+      <div class="step-num">01</div>
+      <div class="step-icon">📝</div>
+      <h3 class="step-title">Post Job & Requirements</h3>
+      <p class="step-desc">Specify location, fuel arrangement type, operational hours needed, and required attachments.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">02</div>
+      <div class="step-icon">⚡</div>
+      <h3 class="step-title">Receive Competitive Bids</h3>
+      <p class="step-desc">Nearby equipment owners bid live. View machine model years, operator profiles, and reviews.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">03</div>
+      <div class="step-icon">🔒</div>
+      <h3 class="step-title">Secure Milestone Escrow</h3>
+      <p class="step-desc">Funds are safely held in escrow. Release payments daily or weekly only after logbook approval.</p>
+    </div>
+    <div class="how-step">
+      <div class="step-num">04</div>
+      <div class="step-icon">🏗️</div>
+      <h3 class="step-title">Track Logs & Deploy</h3>
+      <p class="step-desc">Manage digital hour logs via platform verification. Transport logistics are handled dynamically.</p>
+    </div>
+  </div>
+</section>
+
+<section id="machines" style="background:var(--surface)">
+  <span class="section-label">Equipment</span>
+  <h2 class="section-title">Every machine, one platform.</h2>
+  <p class="section-sub">Tap any category to browse available machines and fleet owners near you.</p>
+
+  <div class="machines-wrap">
+    <div class="machine-grid">
+
+      <a href="rent.html?type=excavator" class="machine-card">
+          <img src="excavator.jpg" alt="Excavator" class="machine-img">
+          <div class="mc-overlay"></div>
+          <div class="mc-info">
+              <h3 class="mc-name">Excavator</h3>
+              <p class="mc-use">Foundation · Trenching · Demolition</p>
+          </div>
+          <div class="mc-arrow">→</div>
+      </a>
+
+      <a href="rent.html?type=bulldozer" class="machine-card">
+          <img src="bulldozer.jpg" alt="Bulldozer" class="machine-img">
+          <div class="mc-overlay"></div>
+          <div class="mc-info">
+              <h3 class="mc-name">Bulldozer</h3>
+              <p class="mc-use">Earthmoving · Land clearing · Grading</p>
+          </div>
+          <div class="mc-arrow">→</div>
+      </a>
+
+      <a href="rent.html?type=crane" class="machine-card">
+          <img src="towercrane.jpg" alt="Tower Crane" class="machine-img">
+          <div class="mc-overlay"></div>
+          <div class="mc-info">
+              <h3 class="mc-name">Tower Crane</h3>
+              <p class="mc-use">High-rise · Steel erection · Heavy lifting</p>
+          </div>
+          <div class="mc-arrow">→</div>
+      </a>
+
+      <a href="rent.html?type=tipper" class="machine-card">
+          <img src="tippertruck.jpg" alt="Tipper Truck" class="machine-img">
+          <div class="mc-overlay"></div>
+          <div class="mc-info">
+              <h3 class="mc-name">Tipper Truck</h3>
+              <p class="mc-use">Haulage · Aggregate · Debris removal</p>
+          </div>
+          <div class="mc-arrow">→</div>
+      </a>
+
+      <a href="rent.html?type=compactor" class="machine-card">
+          <img src="compactor.jpg" alt="Compactor" class="machine-img">
+          <div class="mc-overlay"></div>
+          <div class="mc-info">
+              <h3 class="mc-name">Compactor</h3>
+              <p class="mc-use">Road work · Soil compaction · Paving</p>
+          </div>
+          <div class="mc-arrow">→</div>
+      </a>
+
+      <a href="rent.html?type=grader" class="machine-card">
+          <img src="motorgrader.jpg" alt="Motor Grader" class="machine-img">
+          <div class="mc-overlay"></div>
+          <div class="mc-info">
+              <h3 class="mc-name">Motor Grader</h3>
+              <p class="mc-use">Leveling · Fine grading · Road maintenance</p>
+          </div>
+          <div class="mc-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="section-label">Ecosystem</span>
+  <h2 class="section-title">Built for builders & owners</h2>
+  <p class="section-sub">A unified construction liquidity layers engineered to align operations across commercial infrastructure stakeholders.</p>
+
+  <div class="user-cards">
+    <div class="user-card featured">
+      <div class="user-avatar ua-contractor">🏗️</div>
+      <span class="user-role">For Project Leads</span>
+      <h3 class="user-title">Contractors & Builders</h3>
+      <p class="user-desc">Minimize equipment deployment latency. Scale mobilization requirements up or down across active phases without high overhead costs.</p>
+      <ul class="user-perks">
+        <li>Bypass high machinery idle capital costs</li>
+        <li>Settle operator disputes seamlessly</li>
+        <li>Automated dynamic hour-log invoices</li>
+      </ul>
+    </div>
+
+    <div class="user-card">
+      <div class="user-avatar ua-fleet">🚜</div>
+      <span class="user-role">For Fleet Operators</span>
+      <h3 class="user-title">Fleet & Machine Owners</h3>
+      <p class="user-desc">Maximize equipment monetization metrics. Transform idle steel assets across staging facilities into predictable cash-flowing pipelines.</p>
+      <ul class="user-perks">
+        <li>Direct exposure to localized project pipelines</li>
+        <li>Guaranteed payment protection layer</li>
+        <li>Comprehensive logistics and site updates</li>
+      </ul>
+    </div>
+
+    <div class="user-card">
+      <div class="user-avatar ua-operator">👷</div>
+      <span class="user-role">For Skilled Labor</span>
+      <h3 class="user-title">Certified Operators</h3>
+      <p class="user-desc">Connect directly with vetted construction developers. Secure deployment opportunities matching certified machine specialties.</p>
+      <ul class="user-perks">
+        <li>Access standardized baseline payment hours</li>
+        <li>Verified work hour tracking profiles</li>
+        <li>Transparent on-site hazard assurances</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="demo-section">
+  <div class="demo-wrap">
+    <div>
+      <span class="section-label">Live Interface</span>
+      <h2 class="section-title">Transparent marketplace bidding</h2>
+      <p class="section-sub" style="margin-bottom:24px">Say goodbye to back-and-forth telephone negotiation calls. Fleet owners submit transparent pricing based directly on your project framework specifications.</p>
+      <p class="section-sub">Filter bids instantly by nearby equipment proximity metrics, active operator rating indicators, or total machine cycle milestones.</p>
+      <div>
+        <span class="escrow-pill">🛡️ Secure Escrow Guaranteed</span>
+      </div>
+    </div>
+
+    <div class="demo-phone">
+      <div class="phone-header">
+        <div class="phone-avatar">🏗️</div>
+        <div>
+          <div class="phone-job-title">Melamchi Project, Sec 3</div>
+          <div class="phone-job-sub">Excavator Needed · 45 Hours</div>
+        </div>
+      </div>
+      
+      <div class="bid-row winning">
+        <div>
+          <div class="bid-name">Gorkha Equipments <span class="bid-crown">👑</span></div>
+          <div class="bid-rating">⭐ 4.9 (112 jobs) · 4.2km away</div>
+        </div>
+        <div class="bid-amount">Rs. 3,800<span style="font-size:11px;color:var(--muted)">/hr</span></div>
+      </div>
+
+      <div class="bid-row">
+        <div>
+          <div class="bid-name">KTM Infra Rentals</div>
+          <div class="bid-rating">⭐ 4.7 (43 jobs) · 8.1km away</div>
+        </div>
+        <div class="bid-amount">Rs. 3,950<span style="font-size:11px;color:var(--muted)">/hr</span></div>
+      </div>
+
+      <div class="bid-row">
+        <div>
+          <div class="bid-name">Bhadrakali Builders</div>
+          <div class="bid-rating">⭐ 4.5 (19 jobs) · 12.0km away</div>
+        </div>
+        <div class="bid-amount">Rs. 4,100<span style="font-size:11px;color:var(--muted)">/hr</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <span class="section-label">Capabilities</span>
+  <h2 class="section-title">Designed for modern heavy logistics</h2>
+  <p class="section-sub">A premium suite of technical infrastructure tools constructed specifically to elevate site productivity execution benchmarks.</p>
+
+  <div class="features-grid">
+    <div class="feat-card">
+      <div class="feat-icon">📍</div>
+      <h3 class="feat-title">Geo-Fenced Staging Logs</h3>
+      <p class="feat-desc">Track active deployment coordinates in real-time. Verify machinery performance hours exactly within specified operational zones.</p>
+      <span class="feat-badge badge-new">New Engine</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">📄</div>
+      <h3 class="feat-title">Smart Digital Logbooks</h3>
+      <p class="feat-desc">Operators log work cycles directly within the app. Project leads authorize log summaries weekly before escrow transfers.</p>
+      <span class="feat-badge badge-core">Core Layer</span>
+    </div>
+
+    <div class="feat-card">
+      <div class="feat-icon">🤝</div>
+      <h3 class="feat-title">Automated Dispute Settle</h3>
+      <p class="feat-desc">Independent dispatch parameters provide structured operational resolution parameters in case of weather or maintenance delays.</p>
+      <span class="feat-badge badge-core">Core Layer</span>
+    </div>
+  </div>
+</section>
+
+<section id="pricing" style="background:var(--surface)">
+  <span class="section-label">Pricing Plans</span>
+  <h2 class="section-title">Flexible options for all sizes</h2>
+  <p class="section-sub">Choose a model aligned with your active construction footprint. Upgrade or pause tier cycles instantly.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">Basic Pay-Per-Use</div>
+      <div class="price-amount">0%</div>
+      <div class="price-period">No subscription required</div>
+      <ul class="price-perks">
+        <li class="yes">Standard escrow billing features</li>
+        <li class="yes">Basic operator verification logs</li>
+        <li class="yes">Access to 500+ machinery operators</li>
+        <li class="no">Priority dispatch support</li>
+        <li class="no">Dedicated billing accounts</li>
+      </ul>
+      <a href="#waitlist" class="price-btn price-btn-outline">Join Waitlist</a>
+    </div>
+
+    <div class="price-card featured-price">
+      <div class="featured-tag">RECOMMENDED FOR OWNERS</div>
+      <div class="price-tier">Pro Fleet Elite</div>
+      <div class="price-amount">Rs. 4,999</div>
+      <div class="price-period">Per Month (Billed Annually)</div>
+      <ul class="price-perks">
+        <li class="yes">Reduced marketplace matching fees</li>
+        <li class="yes">Premium visibility rankings on jobs</li>
+        <li class="yes">Advanced fleet dashboard tracking</li>
+        <li class="yes">Priority logistics transport channels</li>
+        <li class="yes">Dedicated 24/7 account support</li>
+      </ul>
+      <a href="#waitlist" class="price-btn price-btn-fill">Upgrade to Pro Fleet</a>
+    </div>
+  </div>
+</section>
+
+<section id="waitlist" class="cta-section">
+  <h2 class="cta-title">READY TO REVOLUTIONIZE<br>YOUR <span class="accent">CONSTRUCTION SITE?</span></h2>
+  <p class="cta-sub">Join the exclusive early access waiting list today. Secure priority onboarding benefits and initial booking fee waving incentives.</p>
+  
+  <div class="input-row">
+    <input type="tel" id="phone-input" placeholder="Enter phone number (+977...)">
+    <button onclick="handleWaitlist()" class="btn-primary" style="white-space:nowrap">Request Early Access</button>
+  </div>
+  <p id="waitlist-msg" style="margin-top:16px; font-size:14px; min-height:20px; font-weight:500;"></p>
+</section>
+
+<footer>
+  <span class="footer-logo">DOZERX</span>
+  <ul class="footer-links">
+    <li><a href="#">About</a></li>
+    <li><a href="#">How it works</a></li>
+    <li><a href="#">Fleet owners</a></li>
+    <li><a href="#">Contractors</a></li>
+    <li><a href="#">Contact</a></li>
+  </ul>
+  <span class="footer-copy">© 2026 DozerX · Kathmandu, Nepal</span>
+</footer>
+
+<script>
+  function handleWaitlist(){
+    const phone=document.getElementById('phone-input').value.trim();
+    const msg=document.getElementById('waitlist-msg');
+    if(!phone){msg.textContent='Enter your phone number first.';msg.style.color='#FF4444';return}
+    msg.textContent='✓ You\'re on the list! We\'ll call you when DozerX launches in your area.';
+    msg.style.color='#22C55E';
+    document.getElementById('phone-input').value='';
+  }
+
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)'}});
+  },{threshold:0.1});
+  document.querySelectorAll('.feat-card,.user-card,.how-step').forEach(el=>{
+    el.style.opacity='1';
+  });
+</script>
+
+</body>
+</html>

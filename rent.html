@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DozerX — Rent Equipment</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+:root{--y:#E8A020;--bg:#0A0A0A;--bg2:#111;--bg3:#161616;--line:#1E1E1E;--t1:#F2F2F2;--t2:#888;--t3:#444;--r:6px}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 48px;border-bottom:1px solid var(--line);background:rgba(10,10,10,0.85);backdrop-filter:blur(20px)}
+.logo{font-size:15px;font-weight:500;letter-spacing:4px;color:var(--y);text-decoration:none}
+.back-btn{font-size:13px;color:var(--t2);text-decoration:none;display:flex;align-items:center;gap:8px;transition:color .2s}
+.back-btn:hover{color:var(--t1)}
+.post-btn{background:var(--y);color:#000;padding:8px 20px;border-radius:var(--r);font-size:13px;font-weight:500;text-decoration:none;transition:opacity .2s}
+.post-btn:hover{opacity:.85}
+
+main{padding:100px 48px 80px}
+.page-head{margin-bottom:48px}
+.eyebrow{font-size:11px;letter-spacing:2px;color:var(--y);text-transform:uppercase;margin-bottom:12px;display:block}
+h1{font-size:clamp(28px,4vw,44px);font-weight:300;letter-spacing:-1px;color:var(--t1);margin-bottom:8px}
+.filters{display:flex;gap:8px;margin-bottom:48px;flex-wrap:wrap}
+.filter-btn{
+  padding:8px 18px;border-radius:20px;font-size:13px;font-weight:400;
+  border:1px solid var(--line);color:var(--t2);background:transparent;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;
+}
+.filter-btn:hover,.filter-btn.active{border-color:var(--y);color:var(--y)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.card{background:var(--bg2);display:flex;flex-direction:column;transition:background .2s;cursor:pointer}
+.card:hover{background:var(--bg3)}
+.card-img{
+  width:100%;aspect-ratio:16/9;object-fit:cover;display:block;
+  opacity:.6;transition:opacity .3s;filter:grayscale(15%);
+}
+.card:hover .card-img{opacity:.8}
+.card-img-ph{
+  width:100%;aspect-ratio:16/9;
+  background:var(--bg3);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:8px;
+}
+.card-body{padding:20px}
+.card-name{font-size:15px;font-weight:400;color:var(--t1);margin-bottom:4px}
+.card-owner{font-size:12px;color:var(--t2);margin-bottom:12px}
+.card-meta{display:flex;align-items:center;justify-content:space-between}
+.card-price{font-size:18px;font-weight:400;color:var(--y);letter-spacing:-.5px}
+.card-price span{font-size:12px;color:var(--t2);font-weight:300}
+.card-rating{font-size:12px;color:var(--t2)}
+.card-btn{
+  display:block;margin:0 20px 20px;padding:10px;
+  border-radius:var(--r);text-align:center;font-size:13px;font-weight:400;
+  border:1px solid var(--line);color:var(--t2);text-decoration:none;
+  transition:all .2s;
+}
+.card-btn:hover{border-color:var(--y);color:var(--y)}
+
+.empty{text-align:center;padding:80px 24px;color:var(--t2);font-size:15px;grid-column:1/-1;background:var(--bg2)}
+
+@media(max-width:768px){
+  main{padding:80px 20px 60px}
+  nav{padding:0 20px}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">DOZERX</a>
+  <a href="index.html" class="back-btn">← Back</a>
+  <a href="index.html#waitlist" class="post-btn">Post a job</a>
+</nav>
+
+<main>
+  <div class="page-head">
+    <span class="eyebrow" id="type-label">All Equipment</span>
+    <h1 id="page-title">Browse machines near you</h1>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="filter('all',this)">All</button>
+    <button class="filter-btn" onclick="filter('excavator',this)">Excavator</button>
+    <button class="filter-btn" onclick="filter('bulldozer',this)">Bulldozer</button>
+    <button class="filter-btn" onclick="filter('crane',this)">Crane</button>
+    <button class="filter-btn" onclick="filter('tipper',this)">Tipper</button>
+    <button class="filter-btn" onclick="filter('compactor',this)">Compactor</button>
+    <button class="filter-btn" onclick="filter('grader',this)">Grader</button>
+  </div>
+
+  <div class="grid" id="grid"></div>
+</main>
+
+<script>
+// Machine listings data — add real machines here
+const machines=[
+  {id:1,type:'excavator',name:'Komatsu PC210 Excavator',owner:'Ram Shrestha Fleet',price:'5,800',unit:'hr',rating:'4.9',jobs:87,img:'images/excavator.jpg',location:'Kathmandu'},
+  {id:2,type:'excavator',name:'CAT 320 Excavator',owner:'Sagar Equipment',price:'6,200',unit:'hr',rating:'4.7',jobs:43,img:'images/excavator.jpg',location:'Lalitpur'},
+  {id:3,type:'bulldozer',name:'Komatsu D65 Bulldozer',owner:'Himal Dozers',price:'7,500',unit:'hr',rating:'4.8',jobs:120,img:'images/bulldozer.jpg',location:'Bhaktapur'},
+  {id:4,type:'crane',name:'Liebherr LTM 1050 Crane',owner:'Nepal Crane Services',price:'12,000',unit:'hr',rating:'4.9',jobs:34,img:'images/crane.jpg',location:'Kathmandu'},
+  {id:5,type:'tipper',name:'TATA Prima Tipper 2528',owner:'Sharma Transport',price:'3,200',unit:'hr',rating:'4.6',jobs:210,img:'images/tipper.jpg',location:'Kathmandu'},
+  {id:6,type:'compactor',name:'HAMM HD 120 Compactor',owner:'Roadtech Nepal',price:'4,500',unit:'hr',rating:'4.8',jobs:67,img:'images/compactor.jpg',location:'Bhaktapur'},
+  {id:7,type:'grader',name:'CAT 140M Motor Grader',owner:'Everest Equipment',price:'8,000',unit:'hr',rating:'4.7',jobs:55,img:'images/grader.jpg',location:'Lalitpur'},
+  {id:8,type:'excavator',name:'Hyundai HX220L Excavator',owner:'Valley Machinery',price:'5,500',unit:'hr',rating:'4.5',jobs:28,img:'images/excavator.jpg',location:'Kathmandu'},
+];
+
+let current='all';
+
+function render(list){
+  const g=document.getElementById('grid');
+  if(list.length===0){g.innerHTML='<div class="empty">No machines found. <a href="index.html#waitlist" style="color:var(--y)">Get notified when fleet owners join →</a></div>';return}
+  g.innerHTML=list.map(m=>`
+    <div class="card">
+      <img src="${m.img}" alt="${m.name}" class="card-img"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+      <div class="card-img-ph" style="display:none">
+        <span style="font-size:11px;color:var(--t3);letter-spacing:1px">NO IMAGE YET</span>
+      </div>
+      <div class="card-body">
+        <div class="card-name">${m.name}</div>
+        <div class="card-owner">${m.owner} · ${m.location}</div>
+        <div class="card-meta">
+          <div class="card-price">₨ ${m.price} <span>/ ${m.unit}</span></div>
+          <div class="card-rating">★ ${m.rating} · ${m.jobs} jobs</div>
+        </div>
+      </div>
+      <a href="index.html#waitlist" class="card-btn">Request this machine →</a>
+    </div>
+  `).join('');
+}
+
+function filter(type,btn){
+  current=type;
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered=type==='all'?machines:machines.filter(m=>m.type===type);
+  render(filtered);
+}
+
+// Read URL param on load
+const params=new URLSearchParams(window.location.search);
+const t=params.get('type');
+if(t){
+  current=t;
+  document.getElementById('type-label').textContent=t.charAt(0).toUpperCase()+t.slice(1);
+  document.getElementById('page-title').textContent='Browse '+t+'s near you';
+  const btn=document.querySelector(`.filter-btn[onclick*="${t}"]`);
+  if(btn){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active')}
+  render(machines.filter(m=>m.type===t));
+}else{
+  render(machines);
+}
+</script>
+</body>
+</html>
